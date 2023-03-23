@@ -32,9 +32,9 @@ export class Phonebook extends Component {
 
   deleteContact = contactId => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
-    }))
-  }
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+    }));
+  };
 
   setFilter = text => {
     this.setState({ filter: text });
@@ -43,6 +43,10 @@ export class Phonebook extends Component {
   render() {
     const visibleContacts = this.state.contacts.filter(contact =>
       contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
+    );
+    
+    visibleContacts.sort((prevItem, nextItem) =>
+      prevItem.name.localeCompare(nextItem.name)
     );
 
     return (
@@ -56,7 +60,10 @@ export class Phonebook extends Component {
         <Filter value={this.state.filter} handler={this.setFilter} />
 
         {this.state.contacts.length !== 0 && (
-          <ContactList contacts={visibleContacts} onDeleteContact={this.deleteContact}/>
+          <ContactList
+            contacts={visibleContacts}
+            onDeleteContact={this.deleteContact}
+          />
         )}
       </Wrapper>
     );
