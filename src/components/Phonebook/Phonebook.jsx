@@ -5,6 +5,8 @@ import { Filter } from '../Filter/Filter';
 import { ContactList } from '../ContactList/ContactList';
 import { Wrapper, Title } from './Phonebook.styled';
 
+const LS_KEY = 'phonebook';
+
 export class Phonebook extends Component {
   state = {
     contacts: [
@@ -15,6 +17,19 @@ export class Phonebook extends Component {
     ],
     filter: '',
   };
+
+  componentDidMount () {
+    const phonebook = localStorage.getItem(LS_KEY);
+    if (phonebook) {
+      this.setState({contacts: JSON.parse(phonebook)})
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if(prevState.contacts.length !== this.state.contacts.length) {
+      localStorage.setItem(LS_KEY, JSON.stringify(this.state.contacts))
+    }
+  }
 
   findContact(contact) {
     return this.state.contacts.find(item => item.name === contact.name);
