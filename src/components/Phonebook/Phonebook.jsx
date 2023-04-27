@@ -1,67 +1,56 @@
-import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { AddContactForm } from '../AddContactForm/AddContactForm';
 import { Filter } from '../Filter/Filter';
 import { ContactList } from '../ContactList/ContactList';
 import { Wrapper, Title } from './Phonebook.styled';
-
-const LS_KEY = 'phonebook';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addContact,
+  removeContact,
+  setFilter,
+} from 'redux/contacts/contactsSlice';
 
 export function Phonebook() {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    const phonebook = localStorage.getItem(LS_KEY);
-    if (phonebook) {
-      setContacts(JSON.parse(phonebook));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (contacts.length !== 0) {
-      localStorage.setItem(LS_KEY, JSON.stringify(contacts));
-    }
-  }, [contacts]);
+  const { contacts, filter } = useSelector(state => state.phonebook);
+  const dispatch = useDispatch();
 
   const findContact = contact => {
     return contacts.find(item => item.name === contact.name);
   };
 
-  const addContact = contact => {
+  const handleAddContact = contact => {
     if (findContact(contact)) {
       return alert(`${contact.name} is already in contacts.`);
     }
     contact['id'] = nanoid();
-    setContacts([...contacts, contact]);
+
+    dispatch(addContact(contact));
   };
 
-  const deleteContact = contactId => {
-    setContacts(contacts.filter(contact => contact.id !== contactId));
+  const handleRemoveContact = contactId => {
+    dispatch(removeContact(contactId));
   };
 
   const visibleContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
   );
 
-  visibleContacts.sort((prev, next) =>
-    prev.name.localeCompare(next.name)
-  );
+  visibleContacts.sort((prev, next) => prev.name.localeCompare(next.name));
 
   return (
     <Wrapper>
       <Title>Phonebook</Title>
 
-      <AddContactForm onSubmit={addContact} />
+      <AddContactForm onSubmit={handleAddContact} />
 
       <Title>Contacts</Title>
 
-      <Filter value={filter} handler={setFilter} />
+      <Filter value={filter} handler={value => dispatch(setFilter(value))} />
 
       {contacts.length !== 0 && (
         <ContactList
           contacts={visibleContacts}
-          onDeleteContact={deleteContact}
+          onDeleteContact={handleRemoveContact}
         />
       )}
     </Wrapper>
