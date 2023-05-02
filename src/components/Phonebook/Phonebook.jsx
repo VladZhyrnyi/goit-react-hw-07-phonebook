@@ -1,18 +1,26 @@
+import { useEffect } from 'react';
 import { nanoid } from 'nanoid';
+
+import { useDispatch, useSelector } from 'react-redux';
+
+import { getContactAction } from 'redux/contacts/operations';
+import { setFilter } from 'redux/contacts/contactsSlice';
+import { postContact, deleteContact } from 'contacs-api';
+
 import { AddContactForm } from '../AddContactForm/AddContactForm';
 import { Filter } from '../Filter/Filter';
+import { Bars } from 'react-loader-spinner';
 import { ContactList } from '../ContactList/ContactList';
+
 import { Wrapper, Title } from './Phonebook.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  addContact,
-  removeContact,
-  setFilter,
-} from 'redux/contacts/contactsSlice';
 
 export function Phonebook() {
-  const { contacts, filter } = useSelector(state => state.phonebook);
+  const { contacts, isLoading, filter } = useSelector(state => state.phonebook);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getContactAction());
+  }, [dispatch]);
 
   const findContact = contact => {
     return contacts.find(item => item.name === contact.name);
@@ -24,11 +32,15 @@ export function Phonebook() {
     }
     contact['id'] = nanoid();
 
-    dispatch(addContact(contact));
+    postContact(contact);
+
+    setTimeout(() => dispatch(getContactAction()), 500);
   };
 
-  const handleRemoveContact = contactId => {
-    dispatch(removeContact(contactId));
+  const handleRemoveContact = async contactId => {
+    deleteContact(contactId);
+
+    setTimeout(() => dispatch(getContactAction()), 500);
   };
 
   const visibleContacts = contacts.filter(contact =>
@@ -46,7 +58,7 @@ export function Phonebook() {
       <Title>Contacts</Title>
 
       <Filter value={filter} handler={value => dispatch(setFilter(value))} />
-
+      <Bars visible={isLoading} />
       {contacts.length !== 0 && (
         <ContactList
           contacts={visibleContacts}
@@ -56,4 +68,4 @@ export function Phonebook() {
     </Wrapper>
   );
 }
-// }
+

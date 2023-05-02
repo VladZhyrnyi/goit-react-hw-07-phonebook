@@ -1,38 +1,41 @@
 import { createSlice } from '@reduxjs/toolkit';
-import persistReducer from 'redux-persist/es/persistReducer';
+import { getContactAction } from './operations';
+import { handlePending, handleFulfilled, handleRejected } from './functions';
 
-import storage from 'redux-persist/lib/storage';
-
+const initialState = {
+  contacts: [],
+  isLoading: false,
+  error: null,
+  filter: '',
+};
 
 const phonebookSlice = createSlice({
   name: 'phonebook',
-  initialState: {contacts: [], filter: ''},
+  initialState,
   reducers: {
     addContact: (state, action) => {
       state.contacts.push(action.payload);
     },
 
     removeContact: (state, action) => {
-      state.contacts = state.contacts.filter(contact => contact.id !== action.payload);
+      state.contacts = state.contacts.filter(
+        contact => contact.id !== action.payload
+      );
     },
 
     setFilter: (state, action) => {
       state.filter = action.payload;
-    }
+    },
+  },
+
+  extraReducers: builder => {
+    builder
+      .addCase(getContactAction.pending, handlePending)
+      .addCase(getContactAction.fulfilled, handleFulfilled)
+      .addCase(getContactAction.rejected, handleRejected);
   },
 });
 
-
-const phonebookPersistConfig = {
-  key: 'contacts',
-  storage,
-};
-
-export const persistedPhonebookReducer = persistReducer(
-  phonebookPersistConfig,
-  phonebookSlice.reducer
-);
+export const phonebookReducer = phonebookSlice.reducer;
 
 export const { addContact, removeContact, setFilter } = phonebookSlice.actions;
-
-
