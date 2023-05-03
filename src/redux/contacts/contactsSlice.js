@@ -1,6 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getContactAction } from './operations';
-import { handlePending, handleFulfilled, handleRejected } from './functions';
+import {
+  getContactAction,
+  postContactAction,
+  deleteContactAction,
+} from './operations';
+import { handlePending, handleFulfilled, handleRejected, addContact, deleteContact } from './functions';
 
 const initialState = {
   contacts: [],
@@ -13,16 +17,6 @@ const phonebookSlice = createSlice({
   name: 'phonebook',
   initialState,
   reducers: {
-    addContact: (state, action) => {
-      state.contacts.push(action.payload);
-    },
-
-    removeContact: (state, action) => {
-      state.contacts = state.contacts.filter(
-        contact => contact.id !== action.payload
-      );
-    },
-
     setFilter: (state, action) => {
       state.filter = action.payload;
     },
@@ -32,10 +26,12 @@ const phonebookSlice = createSlice({
     builder
       .addCase(getContactAction.pending, handlePending)
       .addCase(getContactAction.fulfilled, handleFulfilled)
-      .addCase(getContactAction.rejected, handleRejected);
+      .addCase(getContactAction.rejected, handleRejected)
+      .addCase(postContactAction.fulfilled, addContact)
+      .addCase(deleteContactAction.fulfilled, deleteContact);
   },
 });
 
 export const phonebookReducer = phonebookSlice.reducer;
 
-export const { addContact, removeContact, setFilter } = phonebookSlice.actions;
+export const { setFilter } = phonebookSlice.actions;

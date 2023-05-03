@@ -3,9 +3,13 @@ import { nanoid } from 'nanoid';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getContactAction } from 'redux/contacts/operations';
+import {
+  getContactAction,
+  postContactAction,
+  deleteContactAction,
+} from 'redux/contacts/operations';
 import { setFilter } from 'redux/contacts/contactsSlice';
-import { postContact, deleteContact } from 'contacs-api';
+// import { postContact, deleteContact } from 'contacts-api';
 
 import { AddContactForm } from '../AddContactForm/AddContactForm';
 import { Filter } from '../Filter/Filter';
@@ -32,15 +36,11 @@ export function Phonebook() {
     }
     contact['id'] = nanoid();
 
-    postContact(contact);
-
-    setTimeout(() => dispatch(getContactAction()), 500);
+    dispatch(postContactAction(contact));
   };
 
-  const handleRemoveContact = async contactId => {
-    deleteContact(contactId);
-
-    setTimeout(() => dispatch(getContactAction()), 500);
+  const handleRemoveContact = contactId => {
+    dispatch(deleteContactAction(contactId));
   };
 
   const visibleContacts = contacts.filter(contact =>
@@ -68,4 +68,3 @@ export function Phonebook() {
     </Wrapper>
   );
 }
-
