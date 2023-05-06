@@ -8,18 +8,10 @@ export const getContactAction = createAsyncThunk(
 
 export const postContactAction = createAsyncThunk(
   'contacts/postContact',
-  async data => {
-    await postContact(data);
-
-    return data;
-  }
+  async contact => await postContact(contact)
 );
 
 export const deleteContactAction = createAsyncThunk(
   'contacts/deleteContact',
-  async id => {
-    await deleteContact(id);
-
-    return id;
-  }
+  async id => await deleteContact(id)
 );

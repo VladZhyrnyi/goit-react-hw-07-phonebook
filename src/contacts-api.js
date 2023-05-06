@@ -8,10 +8,14 @@ export const getContacts = async () => {
   return data;
 };
 
-export const postContact = async (data) => {
-  axios.post('/contacts', data)
-}
+export const postContact = async contact => {
+  const { data } = await axios.post('/contacts', contact);
 
-export const deleteContact = async (id) => {
-  axios.delete(`contacts/${id}`)
-}
+  return data;
+};
+
+export const deleteContact = async id => {
+  const { data } = await axios.delete(`contacts/${id}`);
+
+  return data.id;
+};
