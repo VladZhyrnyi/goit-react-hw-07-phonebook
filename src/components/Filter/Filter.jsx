@@ -1,25 +1,21 @@
-import React, { Component } from 'react';
 import { Wrapper, Input } from './Filter.styled';
+import { selectFilter, setFilter } from 'redux/filter/filterSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-export class Filter extends Component {
+export const Filter = () => {
+  const dispatch = useDispatch();
+  const filter = useSelector(selectFilter);
 
-  handleChange = (event) => {
-    const {value} = event.currentTarget;
+  const handleChange = event => {
+    const { value } = event.currentTarget;
 
-    this.props.handler(value);
-  }
+    dispatch(setFilter(value));
+  };
 
-  render() {
-    return (
-      <Wrapper>
-        <p>Find by name:</p>
-        <Input
-          type="text"
-          name="filter"
-          value={this.props.value}
-          onChange={this.handleChange}
-        />
-      </Wrapper>
-    );
-  }
-}
+  return (
+    <Wrapper>
+      <p>Find by name:</p>
+      <Input type="text" name="filter" value={filter} onChange={handleChange} />
+    </Wrapper>
+  );
+};

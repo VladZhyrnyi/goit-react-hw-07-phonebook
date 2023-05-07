@@ -5,4 +5,4 @@ display: flex;
 flex-direction: column;
 gap: 16px;`;
 
-export const Title = styled.h2``;
+

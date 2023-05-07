@@ -1,17 +1,20 @@
 import React from 'react';
 import { Contact } from 'components/Contact/Contact';
-import { List, ListItem } from './ContactList.styled';
+import { List, ListItem, Title } from './ContactList.styled';
 
-export const ContactList = ({ contacts, onDeleteContact }) => {
+export const ContactList = ({ contacts }) => {
   return (
-    <List>
-      {contacts.map(({id, name, number}) => {
-        return (
-          <ListItem key={id}>
-            <Contact id={id} name={name} number={number} onDelete={onDeleteContact}/>
-          </ListItem>
-        );
-      })}
-    </List>
+    <>
+      <Title>Contacts</Title>
+      <List>
+        {contacts.map(({ id, name, number }) => {
+          return (
+            <ListItem key={id}>
+              <Contact id={id} name={name} number={number} />
+            </ListItem>
+          );
+        })}
+      </List>
+    </>
   );
 };

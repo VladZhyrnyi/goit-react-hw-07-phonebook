@@ -6,15 +6,31 @@ import {
   Input,
   SubmitBtn,
 } from './AddContactForm.styled';
+import {
+  useAddContactMutation,
+  useGetContactsQuery,
+} from 'redux/contacts/contactsApi';
 
-export function AddContactForm ( {onSubmit} ) {
+export const AddContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const { data: contacts } = useGetContactsQuery();
+
+  const [addContact] = useAddContactMutation();
+  
+  const findContact = contact => {
+    return contacts.find(item => item.name === contact.name);
+  };
 
   const handleSubmit = event => {
     event.preventDefault();
 
-    onSubmit({ name, number });
+    const contact = { name, number };
+
+    if (findContact(contact)) {
+      return alert(`${contact.name} is already in contacts.`);
+    }
+    addContact(contact);
 
     setName('');
     setNumber('');
@@ -47,4 +63,4 @@ export function AddContactForm ( {onSubmit} ) {
       <SubmitBtn type="submit">Add contact</SubmitBtn>
     </ContactForm>
   );
-}
+};

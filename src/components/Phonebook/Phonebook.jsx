@@ -1,70 +1,42 @@
-import { useEffect } from 'react';
-import { nanoid } from 'nanoid';
-
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  getContactAction,
-  postContactAction,
-  deleteContactAction,
-} from 'redux/contacts/operations';
-import { setFilter } from 'redux/contacts/contactsSlice';
-// import { postContact, deleteContact } from 'contacts-api';
+import { selectFilter, setFilter } from 'redux/filter/filterSlice';
 
 import { AddContactForm } from '../AddContactForm/AddContactForm';
 import { Filter } from '../Filter/Filter';
 import { Bars } from 'react-loader-spinner';
 import { ContactList } from '../ContactList/ContactList';
 
-import { Wrapper, Title } from './Phonebook.styled';
+import { Wrapper } from './Phonebook.styled';
 
-export function Phonebook() {
-  const { contacts, isLoading, filter } = useSelector(state => state.phonebook);
-  const dispatch = useDispatch();
+import { useGetContactsQuery } from 'redux/contacts/contactsApi';
 
-  useEffect(() => {
-    dispatch(getContactAction());
-  }, [dispatch]);
+export const Phonebook = () => {
+  const { data: contacts, isLoading } = useGetContactsQuery();
+  const filter = useSelector(selectFilter);
 
-  const findContact = contact => {
-    return contacts.find(item => item.name === contact.name);
-  };
+  let filteredContacts = [];
 
-  const handleAddContact = contact => {
-    if (findContact(contact)) {
-      return alert(`${contact.name} is already in contacts.`);
-    }
-    contact['id'] = nanoid();
-
-    dispatch(postContactAction(contact));
-  };
-
-  const handleRemoveContact = contactId => {
-    dispatch(deleteContactAction(contactId));
-  };
-
-  const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-
-  visibleContacts.sort((prev, next) => prev.name.localeCompare(next.name));
+  if (contacts) {
+    filteredContacts = contacts.filter(({ name }) =>
+      name.toLowerCase().includes(filter.toLowerCase())
+    );
+    filteredContacts.sort((prev, next) => prev.name.localeCompare(next.name));
+  }
 
   return (
     <Wrapper>
-      <Title>Phonebook</Title>
+      <h1>Phonebook</h1>
 
-      <AddContactForm onSubmit={handleAddContact} />
+      <AddContactForm />
 
-      <Title>Contacts</Title>
-
-      <Filter value={filter} handler={value => dispatch(setFilter(value))} />
+      <Filter />
       <Bars visible={isLoading} />
-      {contacts.length !== 0 && (
-        <ContactList
-          contacts={visibleContacts}
-          onDeleteContact={handleRemoveContact}
-        />
+      {filteredContacts.length !== 0 ? (
+        <ContactList contacts={filteredContacts} />
+      ) : (
+        <h2>Ooops. Something wen't wrong</h2>
       )}
     </Wrapper>
   );
-}
+};
