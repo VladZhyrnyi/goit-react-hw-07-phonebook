@@ -3,7 +3,15 @@ import { getContacts, postContact, deleteContact } from 'contacts-api';
 
 export const getContactAction = createAsyncThunk(
   'contacts/getContacts',
-  async () => await getContacts()
+  async (_, thunkApi) => {
+    try {
+      const {data} = await getContacts();
+      return data;
+    } catch (error) {
+      console.log('error in operations', error.message);
+      return thunkApi.rejectWithValue(error);
+    }
+  }
 );
 
 export const postContactAction = createAsyncThunk(

@@ -19,12 +19,15 @@ import { ContactList } from '../ContactList/ContactList';
 import { Wrapper, Title } from './Phonebook.styled';
 
 export function Phonebook() {
-  const { contacts, isLoading, filter } = useSelector(state => state.phonebook);
+  const { contacts, isLoading, error, filter } = useSelector(state => state.phonebook);
   const dispatch = useDispatch();
+
+  console.log(contacts)
 
   useEffect(() => {
     dispatch(getContactAction());
   }, [dispatch]);
+
 
   const findContact = contact => {
     return contacts.find(item => item.name === contact.name);
@@ -44,13 +47,16 @@ export function Phonebook() {
   };
 
   const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
+    contact?.name?.toLowerCase().includes(filter.toLowerCase())
   );
 
   visibleContacts.sort((prev, next) => prev.name.localeCompare(next.name));
 
+  console.log(error);
+
   return (
     <Wrapper>
+      {error && <h1>{error.message}</h1>}
       <Title>Phonebook</Title>
 
       <AddContactForm onSubmit={handleAddContact} />
